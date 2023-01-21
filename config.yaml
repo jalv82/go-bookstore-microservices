@@ -1,0 +1,17 @@
+version: 0.5.0
+
+database-author:
+  driver: "postgres"
+  user: "bookstore"
+  password: "_b00kSt0r3_"
+  host: "localhost"
+  port: "5431"
+  schema: "bookstore-author"
+
+database-book:
+  driver: "postgres"
+  user: "bookstore"
+  password: "_b00kSt0r3_"
+  host: "localhost"
+  port: "5432"
+  schema: "bookstore-book"

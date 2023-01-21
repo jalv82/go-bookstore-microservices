@@ -1,0 +1,31 @@
+version: "3.8"
+volumes:
+  bookstore-author-postgres:
+  bookstore-book-postgres:
+
+services:
+  database-author:
+    container_name: bookstore-author-postgres
+    image: "postgres:15.1-alpine"
+    restart: always
+    ports:
+      - "5431:5432"
+    environment:
+      POSTGRES_USER: bookstore
+      POSTGRES_PASSWORD: _b00kSt0r3_
+      POSTGRES_DB: bookstore-author
+    volumes:
+      - bookstore-author-postgres:/var/lib/postgresql/data
+
+  database-book:
+    container_name: bookstore-book-postgres
+    image: "postgres:15.1-alpine"
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: bookstore
+      POSTGRES_PASSWORD: _b00kSt0r3_
+      POSTGRES_DB: bookstore-book
+    volumes:
+      - bookstore-book-postgres:/var/lib/postgresql/data
