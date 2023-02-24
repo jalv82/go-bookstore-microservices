@@ -17,7 +17,9 @@ build: tests
 tests:
 	@echo "🔥 Running tests..."
 	@go test bookstore/internal/core/author/domain
+	@go test bookstore/internal/core/author/infrastructure/database
 	@go test bookstore/internal/core/book/domain
+	@go test bookstore/internal/core/book/infrastructure/database
 	@echo "🌴️ All tests passed!"
 
 .PHONY: mocks-generate

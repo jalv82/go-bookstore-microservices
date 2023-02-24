@@ -13,7 +13,7 @@ import (
 
 func main() {
 	readDatabaseConfig := readDatabaseConfig()
-	authorSQLClient := database.NewAuthorSQLClient(readDatabaseConfig)
+	authorSQLClient := database.NewAuthorSqlClient(readDatabaseConfig)
 	authorSQLConverter := database.NewAuthorSQLConverter()
 	repository := infra.NewRepository(*authorSQLClient, *authorSQLConverter)
 	service := domain.NewAuthorService(repository)

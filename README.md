@@ -42,6 +42,7 @@ sequenceDiagram
   go get -u gorm.io/driver/postgres                                                   # ORM
   go get -u github.com/golang/mock/mockgen                                            # Testing 
   go get -u github.com/stretchr/testify                                               # Testing
+  go get -u github.com/DATA-DOG/go-sqlmock                                            # Testing
   go get -u -d github.com/golang-migrate/migrate                                      # Utils
   go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest # Utils
   go get -u github.com/spf13/viper                                                    # Utils

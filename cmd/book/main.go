@@ -13,7 +13,7 @@ import (
 
 func main() {
 	databaseConfig := readDatabaseConfig()
-	bookSQLClient := database.NewBookSQLClient(databaseConfig)
+	bookSQLClient := database.NewBookSqlClient(databaseConfig)
 	bookSQLConverter := database.NewBookSQLConverter()
 	repository := infra.NewRepository(*bookSQLClient, *bookSQLConverter)
 	service := domain.NewBookService(repository)

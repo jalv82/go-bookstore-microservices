@@ -2,6 +2,7 @@ package database
 
 import (
 	commons "bookstore/internal/commons/postgres"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
@@ -10,13 +11,22 @@ type AuthorSQLClient struct {
 	db *gorm.DB
 }
 
-func NewAuthorSQLClient(databaseConfig *commons.DatabaseConfig) *AuthorSQLClient {
-	db, err := commons.NewGormClient(databaseConfig)
+func NewAuthorSqlClient(databaseConfig *commons.DatabaseConfig) *AuthorSQLClient {
+	db, err := commons.NewSqlClient(databaseConfig)
 	if err != nil {
 		log.Fatal().Err(err).Msg(err.Error())
 	}
 
 	return &AuthorSQLClient{db}
+}
+
+func NewMockAuthorSqlClient() (sqlmock.Sqlmock, *AuthorSQLClient) {
+	db, mock, err := commons.NewMockSqlClient()
+	if err != nil {
+		log.Fatal().Err(err).Msg(err.Error())
+	}
+
+	return mock, &AuthorSQLClient{db}
 }
 
 func (a *AuthorSQLClient) Create(author *Author) error {

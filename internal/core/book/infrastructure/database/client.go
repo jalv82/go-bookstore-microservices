@@ -2,6 +2,7 @@ package database
 
 import (
 	commons "bookstore/internal/commons/postgres"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
@@ -10,13 +11,22 @@ type BookSQLClient struct {
 	db *gorm.DB
 }
 
-func NewBookSQLClient(databaseConfig *commons.DatabaseConfig) *BookSQLClient {
-	db, err := commons.NewGormClient(databaseConfig)
+func NewBookSqlClient(databaseConfig *commons.DatabaseConfig) *BookSQLClient {
+	db, err := commons.NewSqlClient(databaseConfig)
 	if err != nil {
 		log.Fatal().Err(err).Msg(err.Error())
 	}
 
 	return &BookSQLClient{db}
+}
+
+func NewMockBookSqlClient() (sqlmock.Sqlmock, *BookSQLClient) {
+	db, mock, err := commons.NewMockSqlClient()
+	if err != nil {
+		log.Fatal().Err(err).Msg(err.Error())
+	}
+
+	return mock, &BookSQLClient{db}
 }
 
 func (a *BookSQLClient) Create(book *Book) error {

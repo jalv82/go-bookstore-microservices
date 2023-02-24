@@ -11,9 +11,12 @@ import (
 )
 
 func TestCreate(t *testing.T) {
+	// Setup
+	t.Parallel()
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
+	// Given
 	mockRepository := infrastructure.NewMockRepository(mockController)
 	newBook := model.Book{
 		Id:    uuid.NewString(),
@@ -22,15 +25,20 @@ func TestCreate(t *testing.T) {
 	mockRepository.EXPECT().Create(newBook).Times(1).Return(nil)
 	service := NewBookService(mockRepository)
 
+	// When
 	err := service.Create(newBook)
 
+	// Then
 	assert.NoError(t, err)
 }
 
 func TestGet(t *testing.T) {
+	// Setup
+	t.Parallel()
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
+	// Given
 	mockRepository := infrastructure.NewMockRepository(mockController)
 	bookId := uuid.NewString()
 	bookToFind := model.Book{
@@ -43,17 +51,22 @@ func TestGet(t *testing.T) {
 	mockRepository.EXPECT().Get(bookToFind).Times(1).Return(bookReturn, nil)
 	service := NewBookService(mockRepository)
 
+	// When
 	result, err := service.Get(bookToFind)
 
+	// Then
 	assert.NoError(t, err)
 	assert.Equal(t, bookToFind.Id, result.Id)
 	assert.NotEmpty(t, bookReturn.Title)
 }
 
 func TestUpdate(t *testing.T) {
+	// Setup
+	t.Parallel()
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
+	// Given
 	mockRepository := infrastructure.NewMockRepository(mockController)
 	existingBook := model.Book{
 		Id:    uuid.NewString(),
@@ -62,15 +75,20 @@ func TestUpdate(t *testing.T) {
 	mockRepository.EXPECT().Update(existingBook).Times(1).Return(nil)
 	service := NewBookService(mockRepository)
 
+	// When
 	err := service.Update(existingBook)
 
+	// Then
 	assert.NoError(t, err)
 }
 
 func TestDelete(t *testing.T) {
+	// Setup
+	t.Parallel()
 	mockController := gomock.NewController(t)
 	defer mockController.Finish()
 
+	// Given
 	mockRepository := infrastructure.NewMockRepository(mockController)
 	existingBook := model.Book{
 		Id:    uuid.NewString(),
@@ -79,7 +97,9 @@ func TestDelete(t *testing.T) {
 	mockRepository.EXPECT().Delete(existingBook).Times(1).Return(nil)
 	service := NewBookService(mockRepository)
 
+	// When
 	err := service.Delete(existingBook)
 
+	// Then
 	assert.NoError(t, err)
 }
