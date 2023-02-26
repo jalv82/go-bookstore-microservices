@@ -5,13 +5,15 @@ run: build
 	@echo "🔥 Running executables..."
 	bin/bookstore-author
 	bin/bookstore-book
+	@echo "🌴️ All executables run!"
 
 .PHONY: build
 build: tests
+	@echo "🔥 Building executables..."
 	@mkdir bin
 	@go build -o bin/bookstore-author cmd/author/main.go
 	@go build -o bin/bookstore-book cmd/book/main.go
-	@echo "🚀 Build done!"
+	@echo "🌴 Build done!"
 
 .PHONY: tests
 tests:
@@ -20,7 +22,8 @@ tests:
 	@go test bookstore/internal/core/author/infrastructure/database
 	@go test bookstore/internal/core/book/domain
 	@go test bookstore/internal/core/book/infrastructure/database
-	@echo "🌴️ All tests passed!"
+	@go test bookstore/acceptance-tests
+	@echo "🌴 All tests passed!"
 
 .PHONY: mocks-generate
 mocks-generate:
@@ -39,20 +42,23 @@ databases-up databases-stop databases-down:
 
 .PHONY: databases-populate
 databases-populate:
+	@echo "🗂️ Populating databases..."
 	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5431/bookstore-author?sslmode=disable' -path scripts/migrator/author up
 	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5432/bookstore-book?sslmode=disable' -path scripts/migrator/book up
-	@echo "🗂️ All databases populated"
+	@echo "🌴 All databases populated!"
 
 .PHONY: databases-clean
 databases-clean:
+	@echo "🧹 Cleaning databases..."
 	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5431/bookstore-author?sslmode=disable' -path scripts/migrator/author drop -f
 	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5432/bookstore-book?sslmode=disable' -path scripts/migrator/book drop -f
-	@echo "🛁 All databases cleaned"
+	@echo "🌴 All databases cleaned!"
 
 .PHONY: executables-clean
 executables-clean:
+	@echo "🧹 Cleaning executables..."
 	@rm -r bin
-	@echo "🧹 All executables cleaned"
+	@echo "🌴 All executables cleaned!"
 
 .PHONY: clean
 clean: databases-clean databases-down executables-clean
