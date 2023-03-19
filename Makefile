@@ -3,32 +3,33 @@ all: databases-init run
 .PHONY: run
 run: build
 	@echo "🔥 Running executables..."
-	bin/bookstore-author
-	bin/bookstore-book
+	bin/bookstore-author-ms
+	bin/bookstore-book-ms
 	@echo "🌴️ All executables run!"
 
 .PHONY: build
 build: tests
 	@echo "🔥 Building executables..."
 	@mkdir bin
-	@go build -o bin/bookstore-author cmd/author/main.go
-	@go build -o bin/bookstore-book cmd/book/main.go
+	@go build -o bin/bookstore-author-ms bookstore-author-ms/cmd/main.go
+	@go build -o bin/bookstore-book-ms bookstore-book-ms/cmd/main.go
 	@echo "🌴 Build done!"
 
 .PHONY: tests
 tests:
 	@echo "🔥 Running tests..."
-	@go test bookstore/internal/core/author/domain
-	@go test bookstore/internal/core/author/infrastructure/database
-	@go test bookstore/internal/core/book/domain
-	@go test bookstore/internal/core/book/infrastructure/database
-	@go test bookstore/acceptance-tests
+	@go test bookstore/bookstore-author-ms/internal/author/domain
+	@go test bookstore/bookstore-author-ms/internal/author/infrastructure/database
+	@go test bookstore/bookstore-author-ms/acceptance-tests
+	@go test bookstore/bookstore-book-ms/internal/book/domain
+	@go test bookstore/bookstore-book-ms/internal/book/infrastructure/database
+	@go test bookstore/bookstore-book-ms/acceptance-tests
 	@echo "🌴 All tests passed!"
 
 .PHONY: mocks-generate
 mocks-generate:
-	@mockgen -package=infrastructure -source=internal/core/author/domain/service.go -destination=internal/core/author/infrastructure/repository_mock.go
-	@mockgen -package=infrastructure -source=internal/core/book/domain/service.go -destination=internal/core/book/infrastructure/repository_mock.go
+	@mockgen -package=infrastructure -source=bookstore-author-ms/internal/author/domain/service.go -destination=bookstore-author-ms/internal/author/infrastructure/repository_mock.go
+	@mockgen -package=infrastructure -source=bookstore-book-ms/internal/book/domain/service.go -destination=bookstore-book-ms/internal/book/infrastructure/repository_mock.go
 
 .PHONY: databases-init
 databases-init: databases-up databases-populate
@@ -43,15 +44,15 @@ databases-up databases-stop databases-down:
 .PHONY: databases-populate
 databases-populate:
 	@echo "🗂️ Populating databases..."
-	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5431/bookstore-author?sslmode=disable' -path scripts/migrator/author up
-	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5432/bookstore-book?sslmode=disable' -path scripts/migrator/book up
+	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5431/bookstore-author?sslmode=disable' -path bookstore-author-ms/scripts/migrator up
+	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5432/bookstore-book?sslmode=disable' -path bookstore-book-ms/scripts/migrator up
 	@echo "🌴 All databases populated!"
 
 .PHONY: databases-clean
 databases-clean:
 	@echo "🧹 Cleaning databases..."
-	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5431/bookstore-author?sslmode=disable' -path scripts/migrator/author drop -f
-	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5432/bookstore-book?sslmode=disable' -path scripts/migrator/book drop -f
+	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5431/bookstore-author?sslmode=disable' -path bookstore-author-ms/scripts/migrator drop -f
+	@migrate -database 'postgres://bookstore:_b00kSt0r3_@localhost:5432/bookstore-book?sslmode=disable' -path bookstore-book-ms/scripts/migrator drop -f
 	@echo "🌴 All databases cleaned!"
 
 .PHONY: executables-clean
@@ -62,8 +63,3 @@ executables-clean:
 
 .PHONY: clean
 clean: databases-clean databases-down executables-clean
-
-
-
-
-
