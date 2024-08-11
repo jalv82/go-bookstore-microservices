@@ -2,6 +2,7 @@ package tests
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -10,17 +11,19 @@ import (
 )
 
 func runMigrations(db *sql.DB, scriptPath string) {
+	sourceURL := fmt.Sprintf("file://%s", scriptPath)
+
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		log.Fatal().Err(err).Msg("database driver could not be get")
 	}
 
-	migrate, err := migrate.NewWithDatabaseInstance("file://"+scriptPath, "postgres", driver)
+	migration, err := migrate.NewWithDatabaseInstance(sourceURL, "postgres", driver)
 	if err != nil {
 		log.Fatal().Err(err).Msg("sql scripts could not be read")
 	}
 
-	err = migrate.Up()
+	err = migration.Up()
 	if err != nil {
 		log.Fatal().Err(err).Msg("sql scripts could not be run")
 	}

@@ -38,7 +38,6 @@ __We are in this step right now__
   - Based on OpenAPI specification
   - Oapi-codegen to generate code from OpenAPI specification
   - Echo web framework
-  - Wiremock library for test apis
 #### Little functionality diagram
 ```mermaid
 sequenceDiagram
@@ -51,16 +50,16 @@ sequenceDiagram
     participant database
     
     user ->> +APIResful: CRUD
+    APIResful ->> APIResful: APIToDomain converter
     APIResful ->> +service: CRUD
-    service ->> service: JSONToDomain converter
     service ->> +repository: CRUD
     repository ->> repository: DomainToDB converter
     repository ->> +database: CRUD
     database -->> -repository: 
     repository ->> repository: DBToDomain converter
     repository -->> -service: 
-    service ->> service: DomainToJSON converter
     service -->> -APIResful: 
+    APIResful ->> APIResful: DomainToAPI converter
     APIResful -->> -user: 
 ```
 ### 🔴 Milestone III
@@ -91,6 +90,9 @@ sequenceDiagram
   go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest # Utils
   go get -u github.com/spf13/viper                                                    # Utils
   go get -u github.com/google/uuid                                                    # Utils
+  go get -u github.com/deepmap/oapi-codegen                                           # Utils
+  go get github.com/invopop/validation                                                # Utils
+  go get -u github.com/labstack/echo                                                  # Web
   ```
 ### 🔥 Run the makefile
 ```shell
@@ -100,7 +102,7 @@ make databases-up       # Databases are initialized
 make databases-populate # Databases are populated
 ```
 ```shell
-make run                # Run the apps 
+make build              # Build the apps 
 ```
 ```shell
 make clean              # Cleans all

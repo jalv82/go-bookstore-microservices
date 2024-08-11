@@ -1,44 +1,31 @@
 package main
 
 import (
-	"bookstore/bookstore-author-ms/internal/author/domain"
-	"bookstore/bookstore-author-ms/internal/author/domain/model"
-	"bookstore/bookstore-author-ms/internal/author/infrastructure"
-	database "bookstore/bookstore-author-ms/internal/author/infrastructure/database"
+	"bookstore/bookstore-author-ms/internal/author/application/crud"
+	apiRestful "bookstore/bookstore-author-ms/internal/author/infrastructure/api_restful"
+	"bookstore/bookstore-author-ms/internal/author/infrastructure/api_restful/openapi"
+	httpServer "bookstore/bookstore-author-ms/internal/author/infrastructure/http_server"
+	sqlDatabase "bookstore/bookstore-author-ms/internal/author/infrastructure/sql_database"
 	"bookstore/internal/commons"
-	"github.com/google/uuid"
 )
 
 func main() {
-	readDatabaseConfig := commons.ReadDatabaseConfig("bookstore-author-ms/config.yaml")
-	authorSQLClient := database.NewAuthorSqlClient(readDatabaseConfig)
-	authorSQLConverter := database.NewAuthorSQLConverter()
-	repository := infrastructure.NewRepository(*authorSQLClient, *authorSQLConverter)
-	service := domain.NewAuthorService(repository)
+	databaseConfig := commons.ReadDatabaseConfig("bookstore-author-ms/config.yaml")
+	postgreSQLClient := commons.NewPostgreSQLClient(databaseConfig)
 
-	author := model.Author{
-		Id:     uuid.NewString(),
-		BookId: uuid.NewString(),
-		Name:   "William",
-	}
+	authorSQLClient := sqlDatabase.NewAuthorSQLClient(postgreSQLClient)
+	authorSQLConverter := sqlDatabase.NewAuthorSQLConverter()
+	repository := sqlDatabase.NewRepository(*authorSQLClient, authorSQLConverter)
 
-	err := service.Create(author)
-	if err != nil {
-		return
-	}
+	service := crud.NewAuthorService(repository)
+	authorAPIConverter := apiRestful.NewAuthorApiConverter()
+	controller := apiRestful.NewAuthorHttpController(&service, authorAPIConverter)
 
-	_, err = service.Get(author)
-	if err != nil {
-		return
-	}
+	httpServerConfig := httpServer.ReadHttpServerConfig("bookstore-author-ms/config.yaml")
+	httpServerInstance := httpServer.NewHttpServer(httpServerConfig)
+	openapi.RegisterHandlers(httpServerInstance.Server, &controller)
 
-	author.Name = "William Kennedy"
-	err = service.Update(author)
-	if err != nil {
-		return
-	}
-
-	err = service.Delete(author)
+	err := httpServerInstance.Up()
 	if err != nil {
 		return
 	}

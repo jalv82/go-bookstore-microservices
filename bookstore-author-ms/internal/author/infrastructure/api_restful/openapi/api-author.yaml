@@ -1,0 +1,207 @@
+openapi: "3.0.0"
+info:
+  title: "Author API"
+  description: API with a set of endpoints for managing authors of books of the bookstore.
+  version: "1.0.0"
+
+servers:
+  - url: 'http://localhost:1323/v1/'
+
+tags:
+  - name: Authors
+    description: API for managing book authors of the bookstore.
+
+paths:
+  /author:
+    post:
+      tags: [ authors ]
+      operationId: "createAuthor"
+      summary: "Create a new author."
+      description: >
+        Create a new author.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorRequestDTO'
+      responses:
+        '201':
+          description: Resource created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorResponseDTO'
+        '400':
+          description: The request could not be processed because it was malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: The request failed to be processed by the server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    get:
+      tags: [ authors ]
+      operationId: "getAuthors"
+      summary: "Get the list of all authors."
+      description: Get the list of all authors.
+      responses:
+        '200':
+          description: "List of all authors."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthorResponseDTO'
+        '400':
+          description: The request could not be processed because it was malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: The request failed to be processed by the server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags: [ authors ]
+      operationId: "updateAuthor"
+      summary: "Update an exists author"
+      description: >
+        Update an exists author.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorRequestDTO'
+      responses:
+        '204':
+          description: Resource updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorResponseDTO'
+        '400':
+          description: The request could not be processed because it was malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              example:
+                error: "wrongRequestBody"
+        '500':
+          description: The request failed to be processed by the server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              example:
+                error: "createAuthor"
+  /author/{authorId}:
+    get:
+      tags: [ authors ]
+      operationId: "getAuthor"
+      summary: "Get an author by id."
+      description: Get an author.
+      parameters:
+        - $ref: '#/components/parameters/AuthorId'
+      responses:
+        '200':
+          description: "Get an author"
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthorResponseDTO'
+        '400':
+          description: The request could not be processed because it was malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: The request failed to be processed by the server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags: [ authors ]
+      operationId: "deleteAuthor"
+      summary: "Delete an exists author by id."
+      description: >
+        Delete an exists author.
+      parameters:
+        - $ref: '#/components/parameters/AuthorId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '400':
+          description: The request could not be processed because it was malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+        '500':
+          description: The request failed to be processed by the server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+components:
+  parameters:
+    AuthorId:
+      name: authorId
+      in: path
+      description: Identification of the author
+      required: true
+      example: "9f9c19fc-68e6-428b-9483-bdfc3eb50046"
+      schema:
+        type: string
+  responses:
+    NoContent:
+      description: Ok without body
+  schemas:
+    AuthorRequestDTO:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          example: "9f9c19fc-68e6-428b-9483-bdfc3eb50046"
+        bookId:
+          type: string
+          example: "2d12d0a0-b555-11ed-afa1-0242ac120002"
+        name:
+          type: string
+          example: "William"
+    AuthorResponseDTO:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          example: "9f9c19fc-68e6-428b-9483-bdfc3eb50046"
+        bookId:
+          type: string
+          example: "2d12d0a0-b555-11ed-afa1-0242ac120002"
+        name:
+          type: string
+          example: "William"
+    ErrorResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "detail of error"
+        error:
+          type: string
+          example: "description of error"

@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 
-	"bookstore/internal/commons"
 	"github.com/rs/zerolog/log"
+
+	"bookstore/internal/commons"
 )
 
 type TestEnvironment struct {
 	DbConfig    *commons.DatabaseConfig
-	DbContainer *PostgresContainer
+	DbContainer *PostgreSQLContainer
 	Db          *sql.DB
 }
 
@@ -19,8 +20,9 @@ var testEnvironment *TestEnvironment
 func GetTestEnvironment() *TestEnvironment {
 	return testEnvironment
 }
+
 func SetUpEnvironment(ctx context.Context, databaseConfig commons.DatabaseConfig, migrateScriptPath string) {
-	container, containerPort, db := runPostgresContainer(ctx, databaseConfig)
+	container, containerPort, db := runPostgreSQLContainer(ctx, databaseConfig)
 
 	runMigrations(db, migrateScriptPath)
 

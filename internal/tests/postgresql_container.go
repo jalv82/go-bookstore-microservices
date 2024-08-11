@@ -6,29 +6,31 @@ import (
 	"fmt"
 	"time"
 
-	"bookstore/internal/commons"
 	"github.com/docker/go-connections/nat"
 	"github.com/rs/zerolog/log"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+
+	"bookstore/internal/commons"
 )
 
 const errMessage = "database container could not be run"
 
-// PostgresContainer represents the postgres container type used in the module
-type PostgresContainer struct {
+// PostgreSQLContainer represents the postgres container type used in the module
+type PostgreSQLContainer struct {
 	testcontainers.Container
 }
 
-type postgresContainerOption func(containerRequest *testcontainers.ContainerRequest)
+type postgreSQLContainerOption func(containerRequest *testcontainers.ContainerRequest)
 
-func runPostgresContainer(ctx context.Context, databaseConfig commons.DatabaseConfig) (container *PostgresContainer, containerPort string, db *sql.DB) {
+func runPostgreSQLContainer(ctx context.Context, databaseConfig commons.DatabaseConfig) (container *PostgreSQLContainer, containerPort string, db *sql.DB) {
 	port, err := nat.NewPort("tcp", databaseConfig.Port)
 	if err != nil {
 		log.Fatal().Err(err).Msg(errMessage)
 	}
 
 	container, err = startContainer(ctx,
+		withImage(databaseConfig.Image),
 		withPort(port.Port()),
 		withInitialDatabase(databaseConfig.User, databaseConfig.Password, databaseConfig.Schema),
 		withWaitStrategy(wait.ForLog("database system is ready to accept connections").WithOccurrence(2).WithStartupTimeout(5*time.Second)),
@@ -59,9 +61,9 @@ func runPostgresContainer(ctx context.Context, databaseConfig commons.DatabaseCo
 }
 
 // startContainer creates an instance of the postgres container type
-func startContainer(ctx context.Context, opts ...postgresContainerOption) (*PostgresContainer, error) {
+func startContainer(ctx context.Context, opts ...postgreSQLContainerOption) (*PostgreSQLContainer, error) {
 	containerRequest := testcontainers.ContainerRequest{
-		Image:        "postgres:15.1-alpine",
+		//Image:        "postgres:15.1-alpine",
 		Env:          map[string]string{},
 		ExposedPorts: []string{},
 		Cmd:          []string{"postgres", "-c", "fsync=off"},
@@ -80,7 +82,13 @@ func startContainer(ctx context.Context, opts ...postgresContainerOption) (*Post
 		return nil, err
 	}
 
-	return &PostgresContainer{Container: container}, nil
+	return &PostgreSQLContainer{Container: container}, nil
+}
+
+func withImage(image string) func(containerRequest *testcontainers.ContainerRequest) {
+	return func(containerRequest *testcontainers.ContainerRequest) {
+		containerRequest.Image = image
+	}
 }
 
 func withPort(port string) func(containerRequest *testcontainers.ContainerRequest) {

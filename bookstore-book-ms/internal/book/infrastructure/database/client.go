@@ -1,9 +1,10 @@
 package database
 
 import (
-	"bookstore/internal/commons"
 	"github.com/DATA-DOG/go-sqlmock"
 	"gorm.io/gorm"
+
+	"bookstore/internal/commons"
 )
 
 type BookSQLClient struct {
@@ -11,13 +12,13 @@ type BookSQLClient struct {
 }
 
 func NewBookSqlClient(databaseConfig *commons.DatabaseConfig) *BookSQLClient {
-	db := commons.NewSqlClient(databaseConfig)
+	db := commons.NewPostgreSQLClient(databaseConfig)
 
 	return &BookSQLClient{db}
 }
 
 func NewMockBookSqlClient() (sqlmock.Sqlmock, *BookSQLClient) {
-	db, mock := commons.NewMockSqlClient()
+	db, mock := commons.NewPostgreSQLClientMock()
 
 	return mock, &BookSQLClient{db}
 }

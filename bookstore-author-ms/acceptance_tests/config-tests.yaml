@@ -1,6 +1,7 @@
-version: 0.0.0
+version: 0.8.0
 
 database:
+  image: "postgres:15.1-alpine"
   driver: "postgres"
   user: "user"
   password: "password"

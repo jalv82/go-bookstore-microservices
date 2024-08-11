@@ -11,6 +11,7 @@ import (
 )
 
 type DatabaseConfig struct {
+	Image    string
 	Driver   string
 	User     string
 	Password string
@@ -28,6 +29,7 @@ func ReadDatabaseConfig(path string) (databaseConfig *DatabaseConfig) {
 	}
 
 	databaseConfig = &DatabaseConfig{
+		Image:    viper.GetString("database.image"),
 		Driver:   viper.GetString("database.driver"),
 		User:     viper.GetString("database.user"),
 		Password: viper.GetString("database.password"),
@@ -39,18 +41,18 @@ func ReadDatabaseConfig(path string) (databaseConfig *DatabaseConfig) {
 	return
 }
 
-func NewSqlClient(config *DatabaseConfig) (db *gorm.DB) {
+func NewPostgreSQLClient(config *DatabaseConfig) (db *gorm.DB) {
 	dbURL := fmt.Sprintf("%s://%s:%s@%s:%s/%s", config.Driver, config.User, config.Password, config.Host, config.Port, config.Schema)
 
 	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 	if err != nil {
-		log.Fatal().Err(err).Msg("sql-client could not be created")
+		log.Fatal().Err(err).Msg("postgresql-client could not be created")
 	}
 
 	return
 }
 
-func NewMockSqlClient() (*gorm.DB, sqlmock.Sqlmock) {
+func NewPostgreSQLClientMock() (*gorm.DB, sqlmock.Sqlmock) {
 	sqlDb, mock, err := sqlmock.New()
 	if err != nil {
 		log.Fatal().Err(err).Msgf("an error '%s' was not expected when opening a stub database connection", err)
@@ -58,7 +60,7 @@ func NewMockSqlClient() (*gorm.DB, sqlmock.Sqlmock) {
 
 	db, err := gorm.Open(postgres.New(postgres.Config{Conn: sqlDb}))
 	if err != nil {
-		log.Fatal().Err(err).Msg("sql-client mock could not be created")
+		log.Fatal().Err(err).Msg("postgresql-client mock could not be created")
 	}
 
 	return db, mock
